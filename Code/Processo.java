@@ -1,5 +1,3 @@
-import java.util.Comparator;
-
 public class Processo extends Thread{
 	private int idProcesso;
 	private int tamProcesso;
@@ -16,9 +14,6 @@ public class Processo extends Thread{
 	public int getIdProcesso() {
 		return idProcesso;
 	}
-	public void setIdProcesso(int idProcesso) {
-		this.idProcesso = idProcesso;
-	}
 	public int getTamProcesso() {
 		return tamProcesso;
 	}
@@ -28,9 +23,6 @@ public class Processo extends Thread{
 	public int getChegada() {
 		return chegada;
 	}
-	public void setChegada(int chegada) {
-		this.chegada = chegada;
-	}
 	public int getBurst() {
 		return burst;
 	}
@@ -39,7 +31,7 @@ public class Processo extends Thread{
 	}
 
 	public void run() {
-		System.out.printf("Criador de processos criou o processo %d e o colocou na fila de entrada \n", idProcesso);
+		System.out.printf("O processo %d foi executado\n", this.idProcesso);
 	}
 	
 	
