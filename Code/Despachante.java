@@ -1,32 +1,30 @@
 public class Despachante extends Thread{
-	private Processo p;
-	private Memoria mem;
+	private Processo processo;
+	private Memoria memoria;
+	private Timer timer;
+	private long timeQuantum;
+	private CPU cpu;
 
-	public Despachante(Processo p, Memoria mem) {
-	// recebe um processo e a memoria
-		this.p = p;
-		this.mem= mem;
+	public Despachante(Processo p, long tq) {
+		this.processo = p;
+		this.timeQuantum = tq;
 	}
 
-	public Processo getP() {
-		return p;
-	}
-
-	public void setP(Processo p) {
-		this.p = p;
+	private boolean verificaSeProcessoEstaNaMemoria(Processo p){
+		boolean resposta = false;
+		if(memoria.getProcessosNaMemoria().contains(p)){
+			resposta = true;
+		}
+		return resposta;
 	}
 	
 	public void run() {
-		// se o processo estiver na memoria
-		if(mem.getListaProntos().contains(p)) {
-			// reinicia timer
-			//libera a cpu para o processo
-		}else {
-			// se nao esta na memoria então esta no disco
-			// chama o swaper  pra pegar o processo no disco
-			// espera ele pegar
-			// libera a cpu
+		if(verificaSeProcessoEstaNaMemoria(processo)){
+			timer = new Timer();
+			cpu = new CPU(processo,timeQuantum, timer);
+			cpu.run();
 		}
+		
 		
 	}
 	

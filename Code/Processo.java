@@ -1,4 +1,4 @@
-public class Processo extends Thread{
+public class Processo implements Runnable{
 	private int idProcesso;
 	private int tamProcesso;
 	private int chegada;
