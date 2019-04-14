@@ -1,6 +1,6 @@
 import java.util.Vector;
 
-public class EscalonadorRoundRobin implements Runnable{
+ class EscalonadorRoundRobin implements Runnable{
     private long timeQuantum;
     private EscalonadorFirstComeFirstServed fcfs;
     private Despachante despachante;

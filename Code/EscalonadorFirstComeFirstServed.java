@@ -1,8 +1,11 @@
 import java.util.Vector;
 
-public class EscalonadorFirstComeFirstServed extends Thread {
+ class EscalonadorFirstComeFirstServed implements Runnable{
 	private Memoria mem;
 	private Vector<Processo> filaEntrada;
+	private Vector<Processo> filaProntos;
+	private  EscalonadorRoundRobin rr;
+	
 	public EscalonadorFirstComeFirstServed(Memoria mem, Vector<Processo> filaEntrada) {
 		this.mem = mem;
 		this.filaEntrada = filaEntrada;
@@ -24,6 +27,7 @@ public class EscalonadorFirstComeFirstServed extends Thread {
 	}
 	//toda vez q ele for chamado ele irá..
 	public void run() {
+		//while(!filaEntrada.isEmpty()) {
 		//pegar o primeiro da fila para ser executado
 		Processo primeiro = filaEntrada.remove(0);
 		//guarda o tamanho dele
@@ -31,16 +35,18 @@ public class EscalonadorFirstComeFirstServed extends Thread {
 		// espera pra ver se ninguem ta alterando a memoria
 		//(metodo ainda não implementado)
 			
-		// então verifica se tem lugar para o processo na memoria
-		if(mem.getTamanho()>tamProcesso) {
+		// então verifidca se tem lugar para o processo na memoria
+		if(mem.getEspacoLivre()>tamProcesso) {
 			// se sim coloca na fila de prontos
-			mem.putListaProntos(primeiro);
+			filaProntos.add(primeiro);
+			rr.run();
+				
 		}
 		else {
-			// se não, wait 
+			// se não, wait ddd
 		}
-		//possivelmente ele fara isso em um loop
 		
+	//	}	
 	}
 	
 
