@@ -1,4 +1,9 @@
-public class Timer extends Thread {
+public class Timer implements Runnable{
+
+    @Override
+    public void run() {
+
+    }
 
     
 }
