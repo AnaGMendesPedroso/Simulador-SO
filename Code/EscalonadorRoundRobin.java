@@ -1,16 +1,29 @@
 import java.util.Vector;
 
-public class EscalonadorRoundRobin extends Thread{
+public class EscalonadorRoundRobin implements Runnable{
     private long timeQuantum;
-    private static Vector<Processo> filaProntos = new Vector<Processo>();
+    private EscalonadorFirstComeFirstServed fcfs;
     private Despachante despachante;
+    private Processo p;
 
-    public EscalonadorRoundRobin(long tq, Vector<Processo>filaProntos){
+    public EscalonadorRoundRobin(long tq, EscalonadorFirstComeFirstServed fcfs){
         this.timeQuantum = tq;
-        this.filaProntos = filaProntos;
+        this.fcfs = fcfs;
     }
     public long getTimeQuantum() {
         return timeQuantum;
     }
-        
+
+    private void escalonaProcesso(){
+        p = fcfs.getFilaProntos().firstElement();
+        fcfs.removeProcesso(p);
+        despachante = new Despachante(p, timeQuantum);
+        despachante.run();
+    }
+    @Override
+    public void run() {
+        escalonaProcesso();
+    }
+    
+    
 }

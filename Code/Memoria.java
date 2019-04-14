@@ -17,6 +17,10 @@ public class Memoria {
 	public int getEspacoLivre(){
 		return espacoLivre;
 	}
+	
+	public Vector getProcessosNaMemoria(){
+		return processosNaMemoria;
+	}
 	public synchronized void adicionaProcessoNaMemoria( Processo p){
 		int tamanhoDoProcesso = p.getTamProcesso();
 		espacoLivre -= tamanhoDoProcesso;
