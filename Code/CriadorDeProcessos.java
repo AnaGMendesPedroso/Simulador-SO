@@ -38,13 +38,24 @@ public class CriadorDeProcessos {
 	public static void main(String [] args) {
 		
 		CriadorDeProcessos criador = new CriadorDeProcessos();
-		
+		// recebendo os parametros para iniciar
 		System.out.println("Entre com tmp n tq (lista de dados de cada processo id tp tc tb)");
 		int tamanhoMemoria = scanner.nextInt();
 		int qtdProcessos = scanner.nextInt();
 		int timeQuantum = scanner.nextInt();
+		//criando processos
 		criador.criaProcesso(qtdProcessos);
+		//ordenando processos
 		criador.ordenaPorChegada();
+		//cria a classe memoria apenas com o tamanho
+		Memoria mem = new Memoria(tamanhoMemoria);
+		//cria o escalonador fcfs e com a lista de entrada e a memoria
+		EscalonadorFirstComeFirstServed fcfs = new EscalonadorFirstComeFirstServed(mem, filaEntrada);
+		//logo ele começa a escalonar
+		fcfs.run();
+		for(Processo a: filaEntrada) {
+			a.run();
+		}
 		//invoca FCFS
 		//FCFS faz: EscalonadorRoundRobin RR = new EscalonadorRoundRobin(timeQuantum,filaProntos);
 		
@@ -63,3 +74,4 @@ public class CriadorDeProcessos {
 		}
 
 }
+
