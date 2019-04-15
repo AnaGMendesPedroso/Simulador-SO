@@ -18,6 +18,9 @@ class EscalonadorFirstComeFirstServed implements Runnable {
 	public synchronized void removeProcessoDaFilaProntos(Processo p) {
 		this.listaProntos.remove(p);
 	}
+	public synchronized Vector<Processo> getFilaProntos(){
+		return this.listaProntos;
+	}
 
 	public synchronized Processo escalonaFifo() {
 		return this.listaEntrada.remove(0);
