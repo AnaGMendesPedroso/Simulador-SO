@@ -34,7 +34,7 @@ public class EscalonadorFirstComeFirstServed extends Thread {
 		// então verifica se tem lugar para o processo na memoria
 		if(mem.getTamanho()>tamProcesso) {
 			// se sim coloca na fila de prontos
-			mem.putListaProntos(primeiro);
+			//mem.putListaProntos(primeiro);
 		}
 		else {
 			// se não, wait 

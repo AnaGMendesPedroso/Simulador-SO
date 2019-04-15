@@ -6,14 +6,9 @@ public class CriadorDeProcessos implements Runnable{
 	private static Vector<Processo> filaAux = new Vector<Processo>();
 	private static Scanner scanner = new Scanner(System.in);
 
-	public void criaProcesso(){
-		int idProcesso = scanner.nextInt();
-		int tamProcesso = scanner.nextInt();
-		int chegada = scanner.nextInt();
-		int burst = scanner.nextInt();
-		Processo p = new Processo(idProcesso, tamProcesso, chegada, burst);
-		filaAux.add(p);
+	public CriadorDeProcessos(){
 	}
+
 	public void ordenaPorChegada(){
 
 		int iterator = filaAux.size();
@@ -36,10 +31,14 @@ public class CriadorDeProcessos implements Runnable{
 	public Vector getFilaEntrada(){
 		return filaEntrada;
 	}
-	public void run() {
-		criaProcesso();
-		ordenaPorChegada();
+
+	public void setFilaAux(Vector<Processo> v){
+		v.forEach((Processo p) -> this.filaAux.add(p));
 	}
+	public void run() {
+		ordenaPorChegada();	
+	}
+
 
 }
 

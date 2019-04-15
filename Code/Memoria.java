@@ -1,6 +1,6 @@
 import java.util.Vector;
 
-public class Memoria {
+public class Memoria implements Runnable{
 	private final int tamanho;
 	private Vector<Processo> processosNaMemoria;
 	private int espacoLivre;
@@ -21,7 +21,7 @@ public class Memoria {
 	public Vector getProcessosNaMemoria(){
 		return processosNaMemoria;
 	}
-	public synchronized void adicionaProcessoNaMemoria( Processo p){
+	public synchronized void adicionaProcessoNaMemoria(Processo p){
 		int tamanhoDoProcesso = p.getTamProcesso();
 		espacoLivre -= tamanhoDoProcesso;
 		processosNaMemoria.add(p);
@@ -29,5 +29,10 @@ public class Memoria {
 	public synchronized void retiraProcessoDaMemoria(Processo p ){
 		processosNaMemoria.remove(p);
 		espacoLivre += p.getTamProcesso();
+	}
+
+	@Override
+	public void run() {
+
 	}
 }
