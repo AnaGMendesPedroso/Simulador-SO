@@ -5,7 +5,7 @@ import java.util.Vector;
     private EscalonadorFirstComeFirstServed fcfs;
     private Despachante despachante;
     private Processo p;
-    private Timer tempo;
+    
 
     public EscalonadorRoundRobin(int tq, EscalonadorFirstComeFirstServed fcfs){
         this.timeQuantum = tq;
@@ -27,6 +27,7 @@ import java.util.Vector;
         escalonaProcessoRR();
         despachante.setTimeQuantumRR(timeQuantum);
         wait();
-        fcfs.voltaProcessoParaFilaProntos(p);
+        fcfs.addListaProntos(p);
+        notify();
     }    
 }

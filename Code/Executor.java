@@ -33,6 +33,7 @@ public class Executor {
         criador.setFilaAux(processos);
         executorDeThreads.execute(criador);
 
+        
         Memoria memoria = new Memoria(scanner.nextInt());
         executorDeThreads.execute(memoria);
 

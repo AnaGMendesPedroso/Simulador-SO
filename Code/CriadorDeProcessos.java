@@ -2,7 +2,7 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class CriadorDeProcessos implements Runnable{
-	private static Vector<Processo> filaEntrada = new Vector<Processo>();
+	private Vector<Processo> filaEntrada = new Vector<Processo>();
 	private static Vector<Processo> filaAux = new Vector<Processo>();
 	private static Scanner scanner = new Scanner(System.in);
 
@@ -28,10 +28,16 @@ public class CriadorDeProcessos implements Runnable{
 		}
 	}
 
-	public Vector getFilaEntrada(){
+	public synchronized Vector getFilaEntrada(){
 		return filaEntrada;
 	}
-
+	public synchronized void removeProcessoFilaEntrada(Processo p) {
+		if(filaEntrada.contains(p)){
+			filaEntrada.remove(p);
+		}else{
+			System.out.println("Processo "+p.getIdProcesso()+ " não está na fila de entrada");
+		}
+	}
 	public void setFilaAux(Vector<Processo> v){
 		v.forEach((Processo p) -> this.filaAux.add(p));
 	}
