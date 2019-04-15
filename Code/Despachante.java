@@ -18,14 +18,27 @@ public class Despachante extends Thread{
 		return resposta;
 	}
 	
+	
 	public void run() {
-		if(verificaSeProcessoEstaNaMemoria(processo)){
-			timer = new Timer();
-			cpu = new CPU(processo,timeQuantum, timer);
-			cpu.run();
-		}
+		while(timer.isUsando());
+		System.out.printf("Despachante percebe que o processo %d está na memória%n",processo.getIdProcesso());
+		timer.setProcessoDaCpu(processo);
+		timer.reinicia();
+		System.out.printf("Despachante reiniciou o Timer com tq e liberou a CPU ao processo %d%n",processo.getIdProcesso());
+		Thread t = new Thread(timer);
+		t.start();
+		while(t.isAlive());
 		
 		
+		
+	}
+
+	public Timer getTimer() {
+		return timer;
+	}
+
+	public void setTimer(Timer timer) {
+		this.timer = timer;
 	}
 	
 
