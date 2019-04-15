@@ -7,6 +7,9 @@ import java.util.Vector;
     private Processo p;
     private Timer tempo;
 
+    public EscalonadorRoundRobin(long tq){
+        this.timeQuantum = tq;
+    }
     public EscalonadorRoundRobin(long tq, EscalonadorFirstComeFirstServed fcfs){
         this.timeQuantum = tq;
         this.fcfs = fcfs;

@@ -5,16 +5,10 @@ public class CriadorDeProcessos implements Runnable{
 	private static Vector<Processo> filaEntrada = new Vector<Processo>();
 	private static Vector<Processo> filaAux = new Vector<Processo>();
 	private static Scanner scanner = new Scanner(System.in);
-	private int qtdP = 0;
 
-	public void criaProcesso(){
-		int idProcesso = scanner.nextInt();
-		int tamProcesso = scanner.nextInt();
-		int chegada = scanner.nextInt();
-		int burst = scanner.nextInt();
-		Processo p = new Processo(idProcesso, tamProcesso, chegada, burst);
-		filaAux.add(p);
+	public CriadorDeProcessos(){
 	}
+
 	public void ordenaPorChegada(){
 
 		int iterator = filaAux.size();
@@ -37,25 +31,13 @@ public class CriadorDeProcessos implements Runnable{
 	public Vector getFilaEntrada(){
 		return filaEntrada;
 	}
+
+	public void setFilaAux(Vector<Processo> v){
+		v.forEach((Processo p) -> this.filaAux.add(p));
+	}
 	public void run() {
-		while(this.qtdP>0) {
-		criaProcesso();
-		this.qtdP--;
-		
-		}
-		ordenaPorChegada();
-		System.out.println("Inı́cio da observação:");
-
-		for(Processo p: this.filaEntrada)
-			System.out.printf("Criador de processos criou o processo %d e o colocou na fila de entrada%n",p.getIdProcesso());
-
-		
-		
+		ordenaPorChegada();	
 	}
-	public void setQtdP(int qtdProcessos) {
-		this.qtdP=qtdProcessos;
-		
-	}
+
 
 }
-
