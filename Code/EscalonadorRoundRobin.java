@@ -1,48 +1,32 @@
 import java.util.Vector;
 
  class EscalonadorRoundRobin implements Runnable{
-    private long timeQuantum;
+    private int timeQuantum;
     private EscalonadorFirstComeFirstServed fcfs;
     private Despachante despachante;
     private Processo p;
     private Timer tempo;
 
-    public EscalonadorRoundRobin(long tq){
-        this.timeQuantum = tq;
-    }
-    public EscalonadorRoundRobin(long tq, EscalonadorFirstComeFirstServed fcfs){
+    public EscalonadorRoundRobin(int tq, EscalonadorFirstComeFirstServed fcfs){
         this.timeQuantum = tq;
         this.fcfs = fcfs;
-        this.tempo= new Timer(tq);
-        this.tempo.setRR(this);
     }
-    public long getTimeQuantum() {
+
+    public int getTimeQuantum() {
         return timeQuantum;
     }
 
-    private void escalonaProcesso(){
-        p = fcfs.getFilaProntos().firstElement();
-        fcfs.removeProcesso(p);
-        System.out.printf("Escalonador Round-Robin de CPU escolheu o processo %d, retirou-o da fila de prontos e o encaminhou ao Despachante%n",p.getIdProcesso());
-        despachante = new Despachante(p, timeQuantum);
-        despachante.setTimer(tempo);
-        despachante.run();
-       
+    private synchronized void escalonaProcessoRR(){
+        Processo processoEscolhido = fcfs.getFilaProntos().get(0);
+        fcfs.removeProcessoDaFilaProntos(processoEscolhido);
+        despachante.setProcessoEscolhidoParaExecucao(processoEscolhido);
+                     
     }
     @Override
     public void run() {
-        escalonaProcesso();
-        while(despachante.isAlive());
-    }
-	public void voltaPraLista(Processo processoDaCpu) {
-		if(processoDaCpu.getBurst()>0) {
-			fcfs.addFilaEntrada(processoDaCpu);
-		}	
-		else {
-			System.out.printf("Processo %d terminou sua execução%n",p.getIdProcesso());
-			
-		}
-	}
-    
-    
+        escalonaProcessoRR();
+        despachante.setTimeQuantumRR(timeQuantum);
+        wait();
+        fcfs.voltaProcessoParaFilaProntos(p);
+    }    
 }

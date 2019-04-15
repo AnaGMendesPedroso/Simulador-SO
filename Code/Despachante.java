@@ -1,15 +1,15 @@
-public class Despachante extends Thread{
+public class Despachante implements Runnable{
+	
 	private Processo processo;
 	private Memoria memoria;
 	private Timer timer;
-	private long timeQuantum;
-	private CPU cpu;
+	private int timeQuantum;
 
-	public Despachante(Processo p, long tq) {
-		this.processo = p;
-		this.timeQuantum = tq;
+	public Despachante() {}
+
+	public void setTimeQuantum(int tq){
+		this.setTimeQuantum(tq);
 	}
-
 	private boolean verificaSeProcessoEstaNaMemoria(Processo p){
 		boolean resposta = false;
 		if(memoria.getProcessosNaMemoria().contains(p)){
@@ -18,29 +18,27 @@ public class Despachante extends Thread{
 		return resposta;
 	}
 	
-	
+	public void setProcessoEscolhidoParaExecucao(Processo processoEscolhido) {
+		this.processo = processoEscolhido;
+	}  
+
 	public void run() {
-		while(timer.isUsando());
-		System.out.printf("Despachante percebe que o processo %d está na memória%n",processo.getIdProcesso());
-		timer.setProcessoDaCpu(processo);
-		timer.reinicia();
-		System.out.printf("Despachante reiniciou o Timer com tq e liberou a CPU ao processo %d%n",processo.getIdProcesso());
-		Thread t = new Thread(timer);
-		t.start();
-		while(t.isAlive());
-		
-		
-		
+		if(verificaSeProcessoEstaNaMemoria(processo)){
+			timer.setTemporizador(0);
+			if(processo.getBurst()>timeQuantum){
+			timer.iniciarTemporizadorAte(timeQuantum);
+			wait();
+			processo.setBurst(processo.getBurst()-timeQuantum);
+			notify();
+			
+			}else{
+			timer.iniciarTemporizadorAte(processo.getBurst());
+			wait();
+			processo.setBurst(processo.getBurst()-processo.getBurst()); // é pra dar 0
+			notify();
+			}
+		}
 	}
 
-	public Timer getTimer() {
-		return timer;
-	}
-
-	public void setTimer(Timer timer) {
-		this.timer = timer;
-	}
-	
-
-    
+	 
 }

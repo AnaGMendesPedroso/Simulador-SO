@@ -26,6 +26,9 @@ public class Executor {
 
         }
         
+        Timer timer = new Timer();
+        executorDeThreads.execute(timer);
+        
         CriadorDeProcessos criador = new CriadorDeProcessos();
         criador.setFilaAux(processos);
         executorDeThreads.execute(criador);
@@ -36,8 +39,13 @@ public class Executor {
                   
         EscalonadorFirstComeFirstServed fcfs = new EscalonadorFirstComeFirstServed();
         executorDeThreads.execute(fcfs);
+        
+        int tq = scanner.nextInt();
+        synchronized(fcfs){
+            EscalonadorRoundRobin rr = new EscalonadorRoundRobin(tq, fcfs);
+            executorDeThreads.execute(rr);
+       }
 
-        EscalonadorRoundRobin rr = new EscalonadorRoundRobin(scanner.nextInt());
-        executorDeThreads.execute(rr);
     }    
+
 }

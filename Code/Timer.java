@@ -4,7 +4,10 @@ public class Timer implements Runnable{
 	private Processo processoDaCpu;
 	private long timeQuantum;
 	private boolean usando;
-    public Timer(long tq){
+	
+	public Timer(){}
+	
+	public Timer(long tq){
     	this.timeQuantum= tq;
     	this.usando=false;
     	this.tempoInicial = 0;
