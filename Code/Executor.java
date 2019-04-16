@@ -67,6 +67,7 @@ public class Executor {
         executorDeThreads.shutdown(); // executor encerra o 
                                     // atendimento a novas requisições,
                                     // mas continua executando aquelas que já foram iniciadas
+        System.out.println("Término da observação\n");
 
     }    
 

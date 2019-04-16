@@ -18,8 +18,7 @@ class EscalonadorFirstComeFirstServed implements Runnable {
 	public synchronized void removeProcessoDaFilaProntos(Processo p) {
 		this.listaProntos.remove(p);
 	}
-
-	public synchronized Vector<Processo> getFilaProntos() {
+	public synchronized Vector<Processo> getFilaProntos(){
 		return this.listaProntos;
 	}
 
@@ -31,8 +30,9 @@ class EscalonadorFirstComeFirstServed implements Runnable {
 	public void run() {
 		try {
 			mem.wait();
-			if(!this.listaProntos.isEmpty()) {
+			if(!this.getFilaProntos().isEmpty()) {
 			Processo p = this.escalonaFifo();
+			
 			System.out.printf("Escalonador FCFS de longo prazo escolheu o processo id %d%n", p.getIdProcesso());
 			if (mem.getEspacoLivre() < p.getChegada()) {
 				this.addListaProntos(p);
@@ -44,14 +44,13 @@ class EscalonadorFirstComeFirstServed implements Runnable {
 			}
 			}
 			else {
-				System.out.println("Término da observação");
+				System.out.printf("Término da observação%n");
 			}
-
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }
