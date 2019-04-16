@@ -1,17 +1,20 @@
 import java.util.Vector;
 public class FilaProntosCompartilhada {
-	private Vector<Processo> listaProntos;
+	private Vector<Processo> filaProntos;
 	public FilaProntosCompartilhada () {
-		this.listaProntos= new Vector<Processo>();
+		this.filaProntos= new Vector<Processo>();
 	}
 	public synchronized void addListaProntos(Processo p) {
-		this.listaProntos.add(p);
+		this.filaProntos.add(p);
 	}
 	public synchronized Vector<Processo> getFilaProntos(){
-		return this.listaProntos;
+		return this.filaProntos;
 	}
 	
 	public synchronized void remove(Processo p){
-		 this.listaProntos.remove(p);
+		 this.filaProntos.remove(p);
 	}
+	public synchronized Processo removePrimeiroProcesso() {
+		return this.filaProntos.remove(0);
+		}
 }
