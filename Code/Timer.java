@@ -1,17 +1,19 @@
 public class Timer implements Runnable{
-	private int tempoTotal;
-	private Processo processoDaCpu;
+	private int tempoCpu;
 	private int temporizador;
 	
     public Timer(){
-    	this.tempoTotal = 0;
+    	this.tempoCpu = 0;
     	
     }
     public synchronized void tictac() {
-    	this.tempoTotal++;
+    	this.tempoCpu++;
     	}
-    public synchronized int getTempoTotal() {
-    	return this.tempoTotal;
+    public synchronized int getTempoCpu() {
+    	return this.tempoCpu;
+    }
+    public synchronized void decrementa() {
+    	 this.temporizador--;
     }
     public synchronized void iniciarTemporizadorAte(int temporizador) {
     	this.temporizador=temporizador;
@@ -27,8 +29,7 @@ public class Timer implements Runnable{
 			this.wait();
 			while(this.temporizador>0) {
 	    		this.tictac();
-	    		this.tempoTotal++;
-	    		this.temporizador--;
+	    		this.decrementa();
 	    	}
 			this.notifyAll();
 		} catch (InterruptedException e) {
