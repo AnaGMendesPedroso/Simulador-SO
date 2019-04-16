@@ -17,4 +17,7 @@ public class FilaProntosCompartilhada {
 	public synchronized Processo removePrimeiroProcesso() {
 		return this.filaProntos.remove(0);
 		}
+	public synchronized boolean isEmpty(){
+		return this.filaProntos.isEmpty();
+	}
 }
