@@ -36,7 +36,4 @@ public class Timer implements Runnable{
 			e.printStackTrace();
 		}
 		
-}
-	public int getTempoCorrente() {
-		return 0;
-	}}
+}}
