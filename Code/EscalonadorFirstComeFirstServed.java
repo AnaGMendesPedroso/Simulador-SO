@@ -1,49 +1,34 @@
 import java.util.Vector;
 
 class EscalonadorFirstComeFirstServed implements Runnable {
-	private Vector<Processo> listaEntrada;
+	private FilaEntradaCompartilhada filaEntrada;
 	private Memoria mem;
-	private Vector<Processo> listaProntos;
+	private FilaProntosCompartilhada filaProntos;
 
-	public EscalonadorFirstComeFirstServed(Vector<Processo> listaEntrada, Memoria mem) {
-		this.listaEntrada = listaEntrada;
+	public EscalonadorFirstComeFirstServed(FilaEntradaCompartilhada filaEntrada,FilaProntosCompartilhada filaProntos, Memoria mem) {
+		this.filaEntrada = filaEntrada;
 		this.mem = mem;
-		this.listaProntos = new Vector<Processo>();
-	}
-
-	public synchronized void addListaProntos(Processo p) {
-		this.listaProntos.add(p);
-	}
-
-	public synchronized void removeProcessoDaFilaProntos(Processo p) {
-		this.listaProntos.remove(p);
-	}
-	public synchronized Vector<Processo> getFilaProntos(){
-		return this.listaProntos;
-	}
-
-	public synchronized Processo escalonaFifo() {
-		return this.listaEntrada.remove(0);
+		this.filaProntos = filaProntos;
 	}
 
 	@Override
 	public void run() {
-		try {
-			mem.wait();
-			Processo p = this.escalonaFifo();
-			System.out.printf("Escalonador FCFS de longo prazo escolheu o processo id %d%n", p.getIdProcesso());
-			if (mem.getEspacoLivre() < p.getChegada()) {
-				this.addListaProntos(p);
-				System.out.printf("Escalonador FCFS de longo prazo retirou o processo id %d da fila de entrada, colocando-o na fila de prontos%n",p.getIdProcesso());
-				this.notifyAll();
-			} else {
-				System.out.printf("Escalonador FCFS de longo prazo não retirou o processo id %d da fila de entrada porque não há espaço na memória%d%n",p.getIdProcesso());
+		//mem.wait();
+		if(!filaProntos.getFilaProntos().isEmpty()) {
+		Processo p = filaEntrada.removeProcessoDaFilaDeEntrada();
+		
+		System.out.printf("Escalonador FCFS de longo prazo escolheu o processo id %d%n", p.getIdProcesso());
+		if (mem.getEspacoLivre() < p.getTamProcesso()) {
+			filaProntos.addListaProntos(p);
+			System.out.printf("Escalonador FCFS de longo prazo retirou o processo id %d da fila de entrada, colocando-o na fila de prontos%n",p.getIdProcesso());
+			this.notifyAll();
+		} else {
+			System.out.printf("Escalonador FCFS de longo prazo não retirou o processo id %d da fila de entrada porque não há espaço na memória%d%n",p.getIdProcesso());
 
-			}
-
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}
+		}
+		else {
+			System.out.printf("Término da observação%n");
 		}
 
 	}

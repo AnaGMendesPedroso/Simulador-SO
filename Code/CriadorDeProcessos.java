@@ -39,7 +39,7 @@ public class CriadorDeProcessos implements Runnable{
 	private void iniciaProcessosPorTempoChegada(){
 		while(!filaProcessosOrdenados.isEmpty()){
 			
-			if(timer.getTempoCorrente() == filaProcessosOrdenados.elementAt(posicaoProcessoQueSeraIniciado).getChegada()){
+			if(timer.getTempoCpu() == filaProcessosOrdenados.elementAt(posicaoProcessoQueSeraIniciado).getChegada()){
 				filaEntrada.add(filaProcessosOrdenados.elementAt(posicaoProcessoQueSeraIniciado));
 
 				System.out.println("Criador de processos criou o processo "
