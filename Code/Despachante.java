@@ -6,12 +6,12 @@ public class Despachante implements Runnable {
 	private int timeQuantum;
 	private FilaProntosCompartilhada filaProntos;
 
-	public Despachante() {
+	public Despachante( FilaProntosCompartilhada filaProntos) {
+		this.filaProntos = filaProntos;
 	}
 
-	public void setTimeQuantumRR(int tq, FilaProntosCompartilhada filaProntos) {
+	public void setTimeQuantumRR(int tq) {
 		this.timeQuantum = tq;
-		this.filaProntos = filaProntos;
 	}
 
 	private boolean verificaSeProcessoEstaNaMemoria(Processo p) {

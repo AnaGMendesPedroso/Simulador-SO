@@ -6,9 +6,8 @@ class EscalonadorRoundRobin implements Runnable {
     private Despachante despachante;
     private Processo p;
 
-    public EscalonadorRoundRobin(int tq, EscalonadorFirstComeFirstServed fcfs) {
+    public EscalonadorRoundRobin(int tq) {
         this.timeQuantum = tq;
-        this.fcfs = fcfs;
     }
 
     public int getTimeQuantum() {
