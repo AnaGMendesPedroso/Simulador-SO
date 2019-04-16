@@ -31,7 +31,11 @@ public class Processo implements Runnable{
 	}
 
 	public void run() {
+		if(this.burst > 0){
 		System.out.printf("O processo %d foi executado\n", this.idProcesso);
+		}else{
+			System.out.printf("O processo %d terminou sua execução\n", this.idProcesso);
+		}
 	}
 	
 	
