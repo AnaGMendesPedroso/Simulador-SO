@@ -1,66 +1,51 @@
 import java.util.Vector;
 
- class EscalonadorFirstComeFirstServed implements Runnable{
+class EscalonadorFirstComeFirstServed implements Runnable {
+	private Vector<Processo> listaEntrada;
 	private Memoria mem;
-	private Vector<Processo> filaEntrada;
-	private Vector<Processo> filaProntos;
-	private  EscalonadorRoundRobin rr;
-	
-	public EscalonadorFirstComeFirstServed(Memoria mem, Vector<Processo> filaEntrada) {
+	private Vector<Processo> listaProntos;
+
+	public EscalonadorFirstComeFirstServed(Vector<Processo> listaEntrada, Memoria mem) {
+		this.listaEntrada = listaEntrada;
 		this.mem = mem;
-		this.filaEntrada = filaEntrada;
-		this.filaProntos= new Vector<Processo>();
+		this.listaProntos = new Vector<Processo>();
 	}
-	public EscalonadorFirstComeFirstServed() {
-	
+
+	public synchronized void addListaProntos(Processo p) {
+		this.listaProntos.add(p);
 	}
-	public Memoria getMem() {
-		return mem;
+
+	public synchronized void removeProcessoDaFilaProntos(Processo p) {
+		this.listaProntos.remove(p);
 	}
-	public void setMem(Memoria mem) {
-		this.mem = mem;
+	public synchronized Vector<Processo> getFilaProntos(){
+		return this.listaProntos;
 	}
-	public Vector<Processo> getFilaEntrada() {
-		return filaEntrada;
+
+	public synchronized Processo escalonaFifo() {
+		return this.listaEntrada.remove(0);
 	}
-	public void setFilaEntrada(Vector<Processo> filaEntrada) {
-		this.filaEntrada = filaEntrada;
-	}
-	//toda vez q ele for chamado ele irá..
+
+	@Override
 	public void run() {
-		while(!this.filaEntrada.isEmpty()) {
-		
-		Processo  primeiro = filaEntrada.remove(0);
-		System.out.printf("Escalonador FCFS de longo prazo escolheu o processo %d%n",primeiro.getIdProcesso());
-		int tamProcesso = primeiro.getTamProcesso();
-		
-			
-		while(mem.getEspacoLivre()<tamProcesso);
-		System.out.printf("Escalonador FCFS de longo prazo retirou o processo %d da fila de entrada, colocando-o na fila de prontos%n",primeiro.getIdProcesso());
-			filaProntos.add(primeiro);
-			Thread rrsoares = new Thread(rr);
-			rrsoares.start();
-			while(rrsoares.isAlive());
+		try {
+			mem.wait();
+			Processo p = this.escalonaFifo();
+			System.out.printf("Escalonador FCFS de longo prazo escolheu o processo id %d%n", p.getIdProcesso());
+			if (mem.getEspacoLivre() < p.getChegada()) {
+				this.addListaProntos(p);
+				System.out.printf("Escalonador FCFS de longo prazo retirou o processo id %d da fila de entrada, colocando-o na fila de prontos%n",p.getIdProcesso());
+				this.notifyAll();
+			} else {
+				System.out.printf("Escalonador FCFS de longo prazo não retirou o processo id %d da fila de entrada porque não há espaço na memória%d%n",p.getIdProcesso());
+
+			}
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
-	public Vector<Processo> getFilaProntos() {
-		return filaProntos;
-	}
-	public void setFilaProntos(Vector<Processo> filaProntos) {
-		this.filaProntos = filaProntos;
-	}
-	public EscalonadorRoundRobin getRr() {
-		return rr;
-	}
-	public void setRr(EscalonadorRoundRobin rr) {
-		this.rr = rr;
-	}
-	public void removeProcesso(Processo p) {
-		this.filaProntos.remove(p);
-	}
-	public void addFilaEntrada(Processo processoDaCpu) {
-		this.filaEntrada.add(processoDaCpu);
-	}
-	
 
 }

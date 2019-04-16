@@ -24,7 +24,7 @@ public class Despachante implements Runnable{
 
 	public void run() {
 		if(verificaSeProcessoEstaNaMemoria(processo)){
-			timer.setTemporizador(0);
+			timer.reinicia();
 			if(processo.getBurst()>timeQuantum){
 			timer.iniciarTemporizadorAte(timeQuantum);
 			wait();
