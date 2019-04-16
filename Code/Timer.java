@@ -1,7 +1,6 @@
 public class Timer implements Runnable{
 	private int tempoCpu;
 	private int temporizador;
-	private boolean isSet=false;
 	
     public Timer(){
     	this.tempoCpu = 0;
@@ -15,7 +14,10 @@ public class Timer implements Runnable{
     }
     public  void iniciarTemporizadorAte(int temporizador) {
     	this.temporizador=temporizador;
-    	this.isSet=true;
+    	while(temporizador>0) {
+    		this.clock();
+    	}
+    	
     }
     public synchronized void decrementaTemporizador(){
     	this.temporizador--;
@@ -27,10 +29,10 @@ public class Timer implements Runnable{
     
 	@Override
     public void run() {
-		while(this.temporizador>0||!isSet) {
-			this.clock();
-			this.decrementaTemporizador();
-		}
-		this.notifyAll();
+	
+			clock();
+	
+		
+		
 		
 }}

@@ -1,40 +1,25 @@
 import java.util.Vector;
 
 class EscalonadorFirstComeFirstServed implements Runnable {
-	private Vector<Processo> listaEntrada;
+	private FilaEntrada listaEntrada;
 	private Memoria mem;
-	private Vector<Processo> listaProntos;
+	private ListaProntosCompartilhada listaProntos;
 
-	public EscalonadorFirstComeFirstServed(Vector<Processo> listaEntrada, Memoria mem) {
+	public EscalonadorFirstComeFirstServed(FilaEntrada listaEntrada,ListaProntosCompartilhada listaProntos, Memoria mem) {
 		this.listaEntrada = listaEntrada;
 		this.mem = mem;
-		this.listaProntos = new Vector<Processo>();
-	}
-
-	public synchronized void addListaProntos(Processo p) {
-		this.listaProntos.add(p);
-	}
-
-	public synchronized void removeProcessoDaFilaProntos(Processo p) {
-		this.listaProntos.remove(p);
-	}
-	public synchronized Vector<Processo> getFilaProntos(){
-		return this.listaProntos;
-	}
-
-	public synchronized Processo escalonaFifo() {
-		return this.listaEntrada.remove(0);
+		this.listaProntos = listaProntos;
 	}
 
 	@Override
 	public void run() {
 		//mem.wait();
-		if(!this.getFilaProntos().isEmpty()) {
-		Processo p = this.escalonaFifo();
+		if(!listaProntos.getFilaProntos().isEmpty()) {
+		Processo p = filaEntrada.removePrimeiro();
 		
 		System.out.printf("Escalonador FCFS de longo prazo escolheu o processo id %d%n", p.getIdProcesso());
-		if (mem.getEspacoLivre() < p.getChegada()) {
-			this.addListaProntos(p);
+		if (mem.getEspacoLivre() < p.getTamProcesso()) {
+			listaProntos.addListaProntos(p);
 			System.out.printf("Escalonador FCFS de longo prazo retirou o processo id %d da fila de entrada, colocando-o na fila de prontos%n",p.getIdProcesso());
 			this.notifyAll();
 		} else {

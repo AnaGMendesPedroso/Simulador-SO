@@ -4,11 +4,10 @@ import java.util.concurrent.Executors;
 import java.util.Vector;
 
 public class Executor {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Vector processos = new Vector<Processo>();
         Scanner scanner = new Scanner(System.in);
         ExecutorService executorDeThreads = Executors.newCachedThreadPool();
-        boolean fcfsTerminouDeEscalonar = false;
 
 
         System.out.println("Início da observação\n");
@@ -42,8 +41,10 @@ public class Executor {
         executorDeThreads.execute(fcfs);
 
         int tq = scanner.nextInt();
+        executorDeThreads.wait();
 
-        while (!fcfsTerminouDeEscalonar) {
+
+       /* while (!fcfsTerminouDeEscalonar) {
             try {
                 executorDeThreads.wait();
             } catch (InterruptedException e) {
@@ -51,7 +52,7 @@ public class Executor {
                 e.printStackTrace();
             }
             fcfsTerminouDeEscalonar = true;
-        }
+        }*/
         EscalonadorRoundRobin rr = new EscalonadorRoundRobin(tq, fcfs);
         executorDeThreads.execute(rr);
 
