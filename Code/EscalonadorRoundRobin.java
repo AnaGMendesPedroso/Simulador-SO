@@ -22,7 +22,7 @@ class EscalonadorRoundRobin implements Runnable {
 
         System.out.println("Escalonador Round-Robin de CPU escolheu o processo "
                             +processoEscolhido.getIdProcesso()+
-                            " , retirou-o da fila de prontos e o encaminhou ao Despachante.");
+                            ", retirou-o da fila de prontos e o encaminhou ao Despachante.");
     }
 
     @Override

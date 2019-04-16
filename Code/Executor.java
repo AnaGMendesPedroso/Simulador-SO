@@ -64,7 +64,7 @@ public class Executor {
         Despachante despachante = new Despachante();
         executorDeThreads.execute(despachante);
     
-       executorDeThreads.shutdown(); // executor encerra o 
+        executorDeThreads.shutdown(); // executor encerra o 
                                     // atendimento a novas requisições,
                                     // mas continua executando aquelas que já foram iniciadas
         System.out.println("Término da observação\n");

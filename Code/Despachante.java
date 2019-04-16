@@ -28,6 +28,7 @@ public class Despachante implements Runnable {
 	public void run() {
 		if (verificaSeProcessoEstaNaMemoria(processo) && processo.getBurst() >= timeQuantum) {
 			timer.iniciarTemporizadorAte(timeQuantum);
+		
 			System.out.println("Despachante reiniciou o Timer com " + timeQuantum + " e liberou a CPU ao processo "
 					+ processo.getIdProcesso());
 
