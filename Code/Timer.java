@@ -29,7 +29,8 @@ public class Timer implements Runnable{
     
 	@Override
     public void run() {
-	
+		System.out.println("cheguei aqui timer");
+
 			clock();
 	
 		

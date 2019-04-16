@@ -12,6 +12,7 @@ public class Despachante implements Runnable {
 
 	public void setTimeQuantumRR(int tq) {
 		this.timeQuantum = tq;
+		this.filaProntos = filaProntos;
 	}
 
 	private boolean verificaSeProcessoEstaNaMemoria(Processo p) {
@@ -28,6 +29,8 @@ public class Despachante implements Runnable {
 	}
 
 	public void run() {
+		System.out.println("cheguei aqui despachante");
+//
 		if (verificaSeProcessoEstaNaMemoria(processo) && processo.getBurst() >= timeQuantum) {
 			timer.iniciarTemporizadorAte(timeQuantum);
 		

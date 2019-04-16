@@ -8,7 +8,8 @@ public class Executor {
         Vector processos = new Vector<Processo>();
         Scanner scanner = new Scanner(System.in);
         ExecutorService executorDeThreads = Executors.newCachedThreadPool();
-
+        FilaProntosCompartilhada filaProntos = new FilaProntosCompartilhada();
+        
 
         System.out.println("Início da observação\n");
         System.out.println("Entre com tmp n tq (lista de dados de cada processo id tp tc tb)");
@@ -24,45 +25,31 @@ public class Executor {
             Processo p = new Processo(idProcesso, tamProcesso, chegada, burst);
             processos.add(p);
             qtdProcessos--;
+          
 
         }
+        
+        Vector<Processo> filaEntrada =ordenaProcessosPorChegada(processos);
 
         Timer timer = new Timer();
         executorDeThreads.execute(timer);
 
-        CriadorDeProcessos criador = new CriadorDeProcessos(timer);
-        criador.setfilaProcessosPassadosPeloUsuario(processos);
+        CriadorDeProcessos criador = new CriadorDeProcessos(timer,filaEntrada);
         executorDeThreads.execute(criador);
 
-        Memoria memoria = new Memoria(scanner.nextInt());
+        Memoria memoria = new Memoria(tamanhoMemoria);
         executorDeThreads.execute(memoria);
 
-        EscalonadorFirstComeFirstServed fcfs = new EscalonadorFirstComeFirstServed(criador.getFilaEntrada(), memoria);
+        EscalonadorFirstComeFirstServed fcfs = new EscalonadorFirstComeFirstServed(criador.getFilaEntrada(),filaProntos,memoria);
         executorDeThreads.execute(fcfs);
 
-        int tq = scanner.nextInt();
-        executorDeThreads.wait();
-
-
-       /* while (!fcfsTerminouDeEscalonar) {
-            try {
-                executorDeThreads.wait();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            fcfsTerminouDeEscalonar = true;
-        }*/
-        EscalonadorRoundRobin rr = new EscalonadorRoundRobin(tq, fcfs);
+   
+        EscalonadorRoundRobin rr = new EscalonadorRoundRobin(timeQuantum, filaProntos);
         executorDeThreads.execute(rr);
 
-        try {
-            executorDeThreads.wait();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        Despachante despachante = new Despachante();
+        
+      
+        Despachante despachante = new Despachante(filaProntos);
         executorDeThreads.execute(despachante);
     
         executorDeThreads.shutdown(); // executor encerra o 
@@ -70,6 +57,30 @@ public class Executor {
                                     // mas continua executando aquelas que já foram iniciadas
         System.out.println("Término da observação\n");
 
-    }    
+    } 
+    public static Vector<Processo> ordenaProcessosPorChegada(Vector<Processo> filaProcessosPassadosPeloUsuario){
+    	 
+    	 Vector<Processo> filaProcessosOrdenados = new Vector<Processo>();
+		int iterator = filaProcessosPassadosPeloUsuario.size();
+		while(iterator > 0){
+			
+			int caux = filaProcessosPassadosPeloUsuario.elementAt(0).getChegada();
+			Processo c = filaProcessosPassadosPeloUsuario.elementAt(0);
+
+			for(int i = 0; i < filaProcessosPassadosPeloUsuario.size(); i++){
+				
+				if(filaProcessosPassadosPeloUsuario.elementAt(i).getChegada() < caux){
+					c = filaProcessosPassadosPeloUsuario.elementAt(i);
+					caux = filaProcessosPassadosPeloUsuario.elementAt(i).getChegada();
+				}
+			}
+
+			filaProcessosOrdenados.add(c);
+			filaProcessosPassadosPeloUsuario.remove(c);
+			iterator--;
+		}
+		return filaProcessosOrdenados;
+	}
+
 
 }

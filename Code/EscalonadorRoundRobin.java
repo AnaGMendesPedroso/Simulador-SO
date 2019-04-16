@@ -2,12 +2,12 @@ import java.util.Vector;
 
 class EscalonadorRoundRobin implements Runnable {
     private final int timeQuantum;
-    private EscalonadorFirstComeFirstServed fcfs;
     private Despachante despachante;
     private Processo p;
-
-    public EscalonadorRoundRobin(int tq) {
+    FilaProntosCompartilhada filaProntos;
+    public EscalonadorRoundRobin(int tq, FilaProntosCompartilhada filaProntos ) {
         this.timeQuantum = tq;
+        this.filaProntos = filaProntos;
     }
 
     public int getTimeQuantum() {
@@ -15,8 +15,8 @@ class EscalonadorRoundRobin implements Runnable {
     }
 
     private synchronized void escalonaProcessoRR() {
-        Processo processoEscolhido = fcfs.getFilaProntos().get(0);
-        fcfs.removeProcessoDaFilaProntos(processoEscolhido);
+    	
+        Processo processoEscolhido = filaProntos.removePrimeiroProcesso();
         despachante.setProcessoEscolhidoParaExecucao(processoEscolhido);
 
         System.out.println("Escalonador Round-Robin de CPU escolheu o processo "
@@ -26,15 +26,11 @@ class EscalonadorRoundRobin implements Runnable {
 
     @Override
     public void run() {
+		System.out.println("cheguei aqui RR");
+
         escalonaProcessoRR();
         despachante.setTimeQuantumRR(timeQuantum);
-        try {
-            wait();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        fcfs.addListaProntos(p);
-        notify();
+      
+        filaProntos.addListaProntos(p);
     }    
 }
