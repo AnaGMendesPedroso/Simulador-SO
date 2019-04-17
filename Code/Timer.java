@@ -1,10 +1,14 @@
+import java.util.Vector;
+
 public class Timer implements Runnable{
 	private int tempoCpu;
-	private int temporizador;
+	private FilaEntradaCompartilhada filaEntrada;
+	private FilaProntosCompartilhada filaProntos;
 	
-    public Timer(){
-    	this.tempoCpu = 0;
-    	
+    public Timer(FilaEntradaCompartilhada fe, FilaProntosCompartilhada fp){
+		this.tempoCpu = 0;
+		this.filaEntrada = fe;
+    	this.filaProntos= fp;
     }
     public synchronized void clock() {
     	this.tempoCpu++;
@@ -12,28 +16,18 @@ public class Timer implements Runnable{
     public synchronized int getTempoCpu() {
     	return this.tempoCpu;
     }
-    public  void iniciarTemporizadorAte(int temporizador) {
-    	this.temporizador=temporizador;
-    	while(temporizador>0) {
-    		this.clock();
-    	}
-    	
+    public synchronized void iniciarTemporizadorAte(int temporizador) {
+		int ateF = getTempoCpu() + temporizador;
+        while (tempoCpu < ateF) {
+            clock();
+        }
     }
-    public synchronized void decrementaTemporizador(){
-    	this.temporizador--;
-    }
-   public synchronized void reinicia(){
-	 this.temporizador=0;  
-   }
-    
     
 	@Override
     public void run() {
-		System.out.println("cheguei aqui timer");
-
-			clock();
-	
-		
-		
-		
-}}
+		synchronized(this){	
+			clock();						
+			notify();
+		}
+	}
+}
