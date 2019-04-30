@@ -54,7 +54,6 @@ public class Executor {
         }
 
         processos = ordenaProcessosPorChegada(processos);
-        processos.forEach((Processo px) -> filaEntrada.colocaNaFilaDeEntrada(px));
         filaEntrada.printaFilaEntrada();
         filaProntos.printaFilaProntos();
 
@@ -63,19 +62,19 @@ public class Executor {
        
         synchronized(timer){
             try{
-                System.out.println("Aguardando TIMER terminar run()...");
+                System.out.println("\nAguardando TIMER terminar run()...");
                 timer.wait();
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
         }
 
-        CriadorDeProcessos criador = new CriadorDeProcessos(timer,filaEntrada);
+        CriadorDeProcessos criador = new CriadorDeProcessos(timer,processos,filaEntrada);
         executorDeThreads.execute(criador);
  
         synchronized(criador){
             try{
-                System.out.println("Aguardando CRIADOR terminar run()...");
+                System.out.println("\nAguardando CRIADOR terminar run()...");
                 criador.wait();
             }catch(InterruptedException e){
                 e.printStackTrace();
@@ -86,7 +85,7 @@ public class Executor {
         executorDeThreads.execute(fcfs);
         synchronized(fcfs){
             try{
-                System.out.println("Aguardando FCFS terminar run()...");
+                System.out.println("\nguardando FCFS terminar run()...");
                 fcfs.wait();
             }catch(InterruptedException e){
                 e.printStackTrace();
@@ -98,7 +97,7 @@ public class Executor {
         executorDeThreads.execute(rr);
         synchronized(rr){
             try{
-                System.out.println("Aguardando RR terminar run()...");
+                System.out.println("\nAguardando RR terminar run()...");
                 rr.wait();
             }catch(InterruptedException e){
                 e.printStackTrace();
@@ -108,7 +107,7 @@ public class Executor {
         executorDeThreads.execute(despachante);
         synchronized(despachante){
             try{
-                System.out.println("Aguardando DESPACHANTE terminar run()...");
+                System.out.println("\nAguardando DESPACHANTE terminar run()...");
                 despachante.wait();
             }catch(InterruptedException e){
                 e.printStackTrace();

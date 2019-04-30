@@ -12,7 +12,8 @@ public class Timer implements Runnable{
     }
     public synchronized void clock() {
     	this.tempoCpu++;
-    	}
+        notifyAll();
+    }
     public synchronized int getTempoCpu() {
     	return this.tempoCpu;
     }
@@ -20,6 +21,7 @@ public class Timer implements Runnable{
 		int ateF = getTempoCpu() + temporizador;
         while (tempoCpu < ateF) {
             clock();
+            notifyAll();
         }
     }
     
@@ -27,7 +29,7 @@ public class Timer implements Runnable{
     public void run() {
 		synchronized(this){	
 			clock();						
-			notify();
+			notifyAll();
 		}
 	}
 }
