@@ -8,12 +8,11 @@ public class CriadorDeProcessos implements Runnable {
 	private Timer timer;
 	private FilaEntradaCompartilhada filaEntrada;
 	private Vector<Processo> filaProcessosOrdenados = new Vector<Processo>();
-	private int 
 
-	public CriadorDeProcessos(Timer t, Vector<Processo> fp, FilaEntradaCompartilhada filaEntrada) {
+	public CriadorDeProcessos(Timer t, FilaEntradaCompartilhada filaEntrada,Vector<Processo> fprocessos) {
 		this.timer = t;
-		this.filaProcessosOrdenados = fp;
 		this.filaEntrada = filaEntrada;
+		this.filaProcessosOrdenados = fprocessos;
 	}
 
 	private synchronized void iniciaProcessosPorTempoChegada() throws InterruptedException {

@@ -10,7 +10,7 @@ public class Executor {
         Scanner scanner = new Scanner(System.in);
         ExecutorService executorDeThreads = Executors.newCachedThreadPool();
         FilaProntosCompartilhada filaProntos = new FilaProntosCompartilhada();
-        filaEntradaCompartilhada filaEntrada = new filaEntradaCompartilhada();
+        FilaEntradaCompartilhada filaEntrada = new FilaEntradaCompartilhada();
         
 
         System.out.println("Início da observação\n");
@@ -33,25 +33,20 @@ public class Executor {
         
         processos = ordenaProcessosPorChegada(processos);
 
-        Timer timer = new Timer();
+        Timer timer = new Timer(filaEntrada, filaProntos);
         executorDeThreads.execute(timer);
 
-        CriadorDeProcessos criador = new CriadorDeProcessos(timer,filaEntrada);
+        CriadorDeProcessos criador = new CriadorDeProcessos(timer,filaEntrada, processos);
         executorDeThreads.execute(criador);
 
         Memoria memoria = new Memoria(tamanhoMemoria);
-        executorDeThreads.execute(memoria);
 
         EscalonadorFirstComeFirstServed fcfs = new EscalonadorFirstComeFirstServed(filaEntrada,filaProntos,memoria);
         executorDeThreads.execute(fcfs);
 
-   
-        EscalonadorRoundRobin rr = new EscalonadorRoundRobin(timeQuantum, filaProntos);
-        executorDeThreads.execute(rr);
-
-        
-      
         Despachante despachante = new Despachante(filaProntos, memoria);
+        EscalonadorRoundRobin rr = new EscalonadorRoundRobin(timeQuantum, filaProntos, despachante);        
+        executorDeThreads.execute(rr);         
         executorDeThreads.execute(despachante);
     
         executorDeThreads.shutdown(); // executor encerra o 
