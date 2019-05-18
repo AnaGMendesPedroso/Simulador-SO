@@ -1,6 +1,6 @@
 import java.util.Vector;
 
-public class Memoria{
+public class Memoria {
 	private final int tamanho;
 	private Vector<Processo> processosNaMemoria = new Vector<Processo>();
 	private int espacoLivre;
@@ -14,31 +14,35 @@ public class Memoria{
 		return tamanho;
 	}
 
-	public synchronized int getEspacoLivre(){
+	public synchronized int getEspacoLivre() {
 		return espacoLivre;
 	}
-	
-	public synchronized boolean contemProcessoX(Processo x){
+
+	public synchronized boolean contemProcessoX(Processo x) {
 		return this.processosNaMemoria.contains(x);
 	}
 
-	public synchronized void adicionaProcessoNaMemoria(Processo p){
+	public synchronized void adicionaProcessoNaMemoria(Processo p) {
 		int tamanhoDoProcesso = p.getTamProcesso();
 		espacoLivre -= tamanhoDoProcesso;
 		processosNaMemoria.add(p);
 	}
 
-	public synchronized void retiraProcessoDaMemoria(Processo p ) throws InterruptedException {
+	public synchronized void retiraProcessoDaMemoria(Processo p) {
 		processosNaMemoria.remove(p);
 		espacoLivre += p.getTamProcesso();
 	}
 
-	public void printaProcessosNaMemoria(){
+	public void printaProcessosNaMemoria() {
 		System.out.println("\nProcessos na memoria");
-		if(!processosNaMemoria.isEmpty()){
-			processosNaMemoria.forEach((Processo p)-> System.out.println("\nPID:"));
-		}else{
+		if (!processosNaMemoria.isEmpty()) {
+			processosNaMemoria.forEach((Processo p) -> System.out.println("\nPID:"));
+		} else {
 			System.out.println("Memória vazia!");
 		}
+	}
+
+	public synchronized void retiraProcessoDaMemoria() {
+		processosNaMemoria.removeElementAt(0);
 	}
 }

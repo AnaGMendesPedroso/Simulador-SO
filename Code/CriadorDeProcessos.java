@@ -1,54 +1,52 @@
-import java.util.Scanner;
 import java.util.Vector;
-// import java.util.concurrent.locks.ReentrantLock; 
 
 public class CriadorDeProcessos implements Runnable {
 
-	private static Scanner scanner = new Scanner(System.in);
 	private Timer timer;
 	private FilaEntradaCompartilhada filaEntrada;
 	private Vector<Processo> filaProcessosOrdenados = new Vector<Processo>();
+	private boolean aindaTemProcessoParaCriar = false;
+	private Processo pa;
 
-	public CriadorDeProcessos(Timer t, FilaEntradaCompartilhada filaEntrada,Vector<Processo> fprocessos) {
+	public CriadorDeProcessos(Timer t, FilaEntradaCompartilhada filaEntrada, Vector<Processo> fprocessos) {
 		this.timer = t;
 		this.filaEntrada = filaEntrada;
 		this.filaProcessosOrdenados = fprocessos;
 	}
 
-	private synchronized void iniciaProcessosPorTempoChegada() throws InterruptedException {
-		Processo pa = filaProcessosOrdenados.firstElement();
-
-		System.out.printf("\n\tProcesso que será iniciado\nPID: %d\ntamanho:%d\nquando chegou:%d\nburst:%d\n",pa.getIdProcesso(), pa.getTamProcesso(), pa.getChegada(), pa.getBurst());
-		System.out.println("Tempo CPU:"+timer.getTempoCpu());
-		
-		if (timer.getTempoCpu() == pa.getChegada()) {
+	private synchronized void iniciaProcesso() {
+		synchronized (filaEntrada) {
 			filaEntrada.colocaNaFilaDeEntrada(pa);
-			System.out.println("Criador de processos criou o processo " + pa.getIdProcesso()
-					+ " e o colocou na fila de entrada. ");
-			filaProcessosOrdenados.remove(pa);
-			notifyAll();
 		}
-		System.out.println("Finalizou iniciaProcesso");
+		System.out.println(
+				"Criador de processos criou o processo " + pa.getIdProcesso() + " e o colocou na fila de entrada. ");
+		filaProcessosOrdenados.remove(pa);
+		verificaSeAindaTemProcessoParaCriar();
+	}
 
+	private void verificaSeAindaTemProcessoParaCriar() {
+		if (filaProcessosOrdenados.size() > 0) {
+			aindaTemProcessoParaCriar = true;
+			pa = filaProcessosOrdenados.firstElement();
+		} else
+			aindaTemProcessoParaCriar = false;
 	}
 
 	public void run() {
-		synchronized(this){
-			int f = filaProcessosOrdenados.size();
-			while(f>0){
-				try {
-					iniciaProcessosPorTempoChegada();
-					timer.clock();
-					f--;
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		verificaSeAindaTemProcessoParaCriar();
+		while (aindaTemProcessoParaCriar) {
+			while (timer.getTempoCpu() != pa.getChegada()) {
+				synchronized (this) {
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-				
 			}
-			
+			iniciaProcesso();
+			timer.clock();
 		}
-		
 	}
-
 }
