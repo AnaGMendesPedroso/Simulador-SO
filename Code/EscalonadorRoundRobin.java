@@ -1,36 +1,45 @@
 import java.util.Vector;
 
-class EscalonadorRoundRobin implements Runnable {
-    private final int timeQuantum;
-    private Despachante despachante;
-    private Processo p;
-    FilaProntosCompartilhada filaProntos;
-    public EscalonadorRoundRobin(int tq, FilaProntosCompartilhada filaProntos ) {
-        this.timeQuantum = tq;
-        this.filaProntos = filaProntos;
-    }
+public class EscalonadorRoundRobin implements Runnable {
+	private final int timeQuantum;
+	private Despachante despachante;
+	private Processo processoEscolhido;
+	FilaProntosCompartilhada filaProntos;
 
-    public int getTimeQuantum() {
-        return timeQuantum;
-    }
+	public EscalonadorRoundRobin(int tq, FilaProntosCompartilhada filaProntos, Despachante d) {
+		this.timeQuantum = tq;
+		this.filaProntos = filaProntos;
+		this.despachante = d;
+	}
 
-    private synchronized void escalonaProcessoRR() {
-    	
-        Processo processoEscolhido = filaProntos.removePrimeiroProcesso();
-        despachante.setProcessoEscolhidoParaExecucao(processoEscolhido);
+	public int getTimeQuantum() {
+		return timeQuantum;
+	}
 
-        System.out.println("Escalonador Round-Robin de CPU escolheu o processo "
-                            +processoEscolhido.getIdProcesso()+
-                            ", retirou-o da fila de prontos e o encaminhou ao Despachante.");
-    }
+	private synchronized void escalonaProcessoRR() {
+		processoEscolhido = filaProntos.getPrimeiroProcesso();
+		despachante.setProcessoEscolhidoParaExecucao(processoEscolhido);
+		despachante.setTimeQuantumRR(timeQuantum);
+		filaProntos.remove(processoEscolhido);
+		System.out.println("Escalonador Round-Robin de CPU escolheu o processo " + processoEscolhido.getIdProcesso()
+				+ ", retirou-o da fila de prontos e o encaminhou ao Despachante.");
+	}
 
-    @Override
-    public void run() {
-		System.out.println("cheguei aqui RR");
-
-        escalonaProcessoRR();
-        despachante.setTimeQuantumRR(timeQuantum);
-      
-        filaProntos.addListaProntos(p);
-    }    
+	@Override
+	public void run() {
+		while (filaProntos.isEmpty()) {
+			synchronized (this) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		escalonaProcessoRR();
+		synchronized (despachante) {
+			despachante.notify();
+		}
+	}
 }

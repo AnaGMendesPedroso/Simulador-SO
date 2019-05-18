@@ -1,39 +1,56 @@
-public class Timer implements Runnable{
+public class Timer implements Runnable {
 	private int tempoCpu;
-	private int temporizador;
-	
-    public Timer(){
-    	this.tempoCpu = 0;
-    	
-    }
-    public synchronized void clock() {
-    	this.tempoCpu++;
-    	}
-    public synchronized int getTempoCpu() {
-    	return this.tempoCpu;
-    }
-    public  void iniciarTemporizadorAte(int temporizador) {
-    	this.temporizador=temporizador;
-    	while(temporizador>0) {
-    		this.clock();
-    	}
-    	
-    }
-    public synchronized void decrementaTemporizador(){
-    	this.temporizador--;
-    }
-   public synchronized void reinicia(){
-	 this.temporizador=0;  
-   }
-    
-    
-	@Override
-    public void run() {
-		System.out.println("cheguei aqui timer");
+	private FilaEntradaCompartilhada filaEntrada;
+	private FilaProntosCompartilhada filaProntos;
+	private CriadorDeProcessos criador;
+	private Despachante despachante;
+	private boolean terminouTimeQuantum = false;
 
+	public Timer(FilaEntradaCompartilhada fe, FilaProntosCompartilhada fp) {
+		this.tempoCpu = 0;
+		this.filaEntrada = fe;
+		this.filaProntos = fp;
+	}
+
+	public synchronized void clock() {
+		tempoCpu++;
+		synchronized (filaEntrada) {
+			filaEntrada.notify();
+		}
+	}
+
+	public int getTempoCpu() {
+		return this.tempoCpu;
+	}
+
+	public synchronized void iniciarTemporizadorAte(int temporizador) {
+		int ateF = getTempoCpu() + temporizador;
+		while (tempoCpu < ateF) {
 			clock();
-	
-		
-		
-		
-}}
+		}
+		terminouTimeQuantum = true;
+		synchronized (despachante) {
+			despachante.notify();
+		}
+		terminouTimeQuantum = false;
+	}
+
+	public void setCriador(CriadorDeProcessos c) {
+		this.criador = c;
+	}
+
+	public void setDespachante(Despachante d) {
+		this.despachante = d;
+	}
+
+	public boolean getTerminouTimeQuantum() {
+		return this.terminouTimeQuantum;
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+			clock();
+		}
+	}
+}

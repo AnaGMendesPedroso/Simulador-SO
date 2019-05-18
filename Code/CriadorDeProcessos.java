@@ -1,42 +1,52 @@
-import java.util.Scanner;
 import java.util.Vector;
 
-public class CriadorDeProcessos implements Runnable{
+public class CriadorDeProcessos implements Runnable {
 
-
-	private Vector<Processo> filaEntrada = new Vector<Processo>();
-	private int posicaoProcessoQueSeraIniciado = 0;
-	private static Scanner scanner = new Scanner(System.in);
 	private Timer timer;
+	private FilaEntradaCompartilhada filaEntrada;
+	private Vector<Processo> filaProcessosOrdenados = new Vector<Processo>();
+	private boolean aindaTemProcessoParaCriar = false;
+	private Processo pa;
 
-	public CriadorDeProcessos(Timer t,Vector<Processo> filaEntrada){
+	public CriadorDeProcessos(Timer t, FilaEntradaCompartilhada filaEntrada, Vector<Processo> fprocessos) {
 		this.timer = t;
-		this.filaEntrada= filaEntrada;
+		this.filaEntrada = filaEntrada;
+		this.filaProcessosOrdenados = fprocessos;
 	}
 
-	
-	private void iniciaProcessosPorTempoChegada(){
-		//while(!filaEntrada.isEmpty()){
-			System.out.println("cheguei aqui criador");
-
-			if(timer.getTempoCpu() == filaEntrada.elementAt(0).getChegada()){
-				System.out.println("Criador de processos criou o processo "
-									+filaEntrada.elementAt(posicaoProcessoQueSeraIniciado).getIdProcesso()+
-									" e o colocou na fila de entrada. ");			
-				
-			}
-			filaEntrada.remove(0);
-			posicaoProcessoQueSeraIniciado++;
+	private synchronized void iniciaProcesso() {
+		synchronized (filaEntrada) {
+			filaEntrada.colocaNaFilaDeEntrada(pa);
 		}
-	//}
-
-	public synchronized Vector<Processo> getFilaEntrada(){
-		return filaEntrada;
+		System.out.println(
+				"Criador de processos criou o processo " + pa.getIdProcesso() + " e o colocou na fila de entrada. ");
+		filaProcessosOrdenados.remove(pa);
+		verificaSeAindaTemProcessoParaCriar();
 	}
-	
+
+	private void verificaSeAindaTemProcessoParaCriar() {
+		if (filaProcessosOrdenados.size() > 0) {
+			aindaTemProcessoParaCriar = true;
+			pa = filaProcessosOrdenados.firstElement();
+		} else
+			aindaTemProcessoParaCriar = false;
+	}
 
 	public void run() {
-		iniciaProcessosPorTempoChegada();		
+		verificaSeAindaTemProcessoParaCriar();
+		while (aindaTemProcessoParaCriar) {
+			while (timer.getTempoCpu() != pa.getChegada()) {
+				synchronized (this) {
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			iniciaProcesso();
+			timer.clock();
+		}
 	}
-
 }
