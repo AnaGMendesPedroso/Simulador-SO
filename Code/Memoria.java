@@ -4,6 +4,7 @@ public class Memoria {
 	private final int tamanho;
 	private Vector<Processo> processosNaMemoria = new Vector<Processo>();
 	private int espacoLivre;
+	private Processo ultimoProcessoAdicionado;
 
 	public Memoria(int tamanho) {
 		this.tamanho = tamanho;
@@ -25,12 +26,8 @@ public class Memoria {
 	public synchronized void adicionaProcessoNaMemoria(Processo p) {
 		int tamanhoDoProcesso = p.getTamProcesso();
 		espacoLivre -= tamanhoDoProcesso;
+		ultimoProcessoAdicionado= p;
 		processosNaMemoria.add(p);
-	}
-
-	public synchronized void retiraProcessoDaMemoria(Processo p) {
-		processosNaMemoria.remove(p);
-		espacoLivre += p.getTamProcesso();
 	}
 
 	public void printaProcessosNaMemoria() {
@@ -42,7 +39,18 @@ public class Memoria {
 		}
 	}
 
-	public synchronized void retiraProcessoDaMemoria() {
-		processosNaMemoria.removeElementAt(0);
+	public synchronized Processo retiraProcessoDaMemoria() {
+		Processo p=null;
+		if(processosNaMemoria.firstElement().equals(ultimoProcessoAdicionado)){
+			p=processosNaMemoria.lastElement();
+			processosNaMemoria.remove(p);
+			espacoLivre += p.getTamProcesso();
+		}else{
+			p = processosNaMemoria.firstElement();
+			processosNaMemoria.remove(p);
+			espacoLivre += p.getTamProcesso();
+		}
+		
+		return p;
 	}
 }

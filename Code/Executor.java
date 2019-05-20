@@ -2,12 +2,13 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.Vector;
+//Anter de executar realize os seguintes comandos: javac *.java
+// Para executar // sudo nice -n -20 java Executor
 //Entrada: 1000 3 2 1 500 5 15 0 700 1 5 2 600 2 10 
 
 public class Executor {
-	// private static
 	public static void main(String[] args) {
-		Vector processos = new Vector<Processo>();
+		Vector<Processo> processos = new Vector<Processo>();
 		Scanner scanner = new Scanner(System.in);
 		ExecutorService executorDeThreads = Executors.newCachedThreadPool();
 		FilaProntosCompartilhada filaProntos = new FilaProntosCompartilhada();
@@ -28,29 +29,31 @@ public class Executor {
 			processos.add(p);
 			qtdProcessos--;
 		}
-
+		scanner.close();
 		processos = ordenaProcessosPorChegada(processos);
 
-		Timer timer = new Timer(filaEntrada, filaProntos);
+		Timer timer = new Timer();
 		CriadorDeProcessos criador = new CriadorDeProcessos(timer, filaEntrada, processos);
 		Memoria memoria = new Memoria(tamanhoMemoria);
-		Swapper swapper = new Swapper(memoria);
-		Despachante despachante = new Despachante(timer, memoria, swapper, filaProntos);
-		EscalonadorRoundRobin rr = new EscalonadorRoundRobin(timeQuantum, filaProntos, despachante);
+		Swapper swapper = new Swapper(memoria, timer);
+		Despachante despachante = new Despachante(timer, memoria, swapper);
+		EscalonadorRoundRobin rr = new EscalonadorRoundRobin(timeQuantum, filaProntos, despachante, timer, processos);
 		EscalonadorFirstComeFirstServed fcfs = new EscalonadorFirstComeFirstServed(filaEntrada, filaProntos, memoria,
-				swapper, rr);
+				swapper, rr, timer,processos);
+		criador.setFCFS(fcfs);
 		swapper.setFCFS(fcfs);
 		swapper.setDespachante(despachante);
+		despachante.setRR(rr);
 		timer.setDespachante(despachante);
 		timer.setCriador(criador);
-		// despachante.setRR(rr);
 
-		executorDeThreads.execute(timer);
 		executorDeThreads.execute(criador);
-		executorDeThreads.execute(fcfs);
+		executorDeThreads.execute(timer);
 		executorDeThreads.execute(swapper);
-		executorDeThreads.execute(rr);
 		executorDeThreads.execute(despachante);
+		executorDeThreads.execute(fcfs);
+		executorDeThreads.execute(rr);
+		
 
 		executorDeThreads.shutdown(); // executor encerra o
 		// atendimento a novas requisições,

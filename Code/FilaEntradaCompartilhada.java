@@ -22,6 +22,7 @@ public class FilaEntradaCompartilhada {
 
 	public synchronized void colocaNaFilaDeEntrada(Processo p) {
 		filaEntrada.add(p);
+		// printaFilaEntrada();
 	}
 
 	private void ordenaFilaEntrada() {

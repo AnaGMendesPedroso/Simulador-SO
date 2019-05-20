@@ -3,10 +3,9 @@ import java.util.Vector;
 public class CriadorDeProcessos implements Runnable {
 
 	private Timer timer;
+	private EscalonadorFirstComeFirstServed fcfs;
 	private FilaEntradaCompartilhada filaEntrada;
 	private Vector<Processo> filaProcessosOrdenados = new Vector<Processo>();
-	private boolean aindaTemProcessoParaCriar = false;
-	private Processo pa;
 
 	public CriadorDeProcessos(Timer t, FilaEntradaCompartilhada filaEntrada, Vector<Processo> fprocessos) {
 		this.timer = t;
@@ -14,39 +13,35 @@ public class CriadorDeProcessos implements Runnable {
 		this.filaProcessosOrdenados = fprocessos;
 	}
 
-	private synchronized void iniciaProcesso() {
+	private synchronized void iniciaProcesso(Processo pa) {
+		while (timer.getTempoCpu() != pa.getChegada()) {
+			synchronized (this) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		synchronized (filaEntrada) {
 			filaEntrada.colocaNaFilaDeEntrada(pa);
 		}
 		System.out.println(
 				"Criador de processos criou o processo " + pa.getIdProcesso() + " e o colocou na fila de entrada. ");
 		filaProcessosOrdenados.remove(pa);
-		verificaSeAindaTemProcessoParaCriar();
+		synchronized(fcfs){
+			fcfs.notify();
+		}
 	}
 
-	private void verificaSeAindaTemProcessoParaCriar() {
-		if (filaProcessosOrdenados.size() > 0) {
-			aindaTemProcessoParaCriar = true;
-			pa = filaProcessosOrdenados.firstElement();
-		} else
-			aindaTemProcessoParaCriar = false;
+	public void setFCFS(EscalonadorFirstComeFirstServed fcfs2) {
+		this.fcfs = fcfs2;
 	}
 
 	public void run() {
-		verificaSeAindaTemProcessoParaCriar();
-		while (aindaTemProcessoParaCriar) {
-			while (timer.getTempoCpu() != pa.getChegada()) {
-				synchronized (this) {
-					try {
-						this.wait();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-			iniciaProcesso();
-			timer.clock();
+		while (filaProcessosOrdenados.size() > 0) {
+			Processo pa = filaProcessosOrdenados.firstElement();
+			iniciaProcesso(pa);
 		}
 	}
 }

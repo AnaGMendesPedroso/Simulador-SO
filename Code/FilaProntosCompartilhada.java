@@ -9,6 +9,7 @@ public class FilaProntosCompartilhada {
 
 	public synchronized void addFilaProntos(Processo p) {
 		this.filaProntos.add(p);
+		// printaFilaProntos();
 	}
 
 	public synchronized Vector<Processo> getFilaProntos() {

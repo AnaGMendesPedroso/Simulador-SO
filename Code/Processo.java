@@ -1,4 +1,4 @@
-public class Processo implements Runnable {
+public class Processo {
 	private int idProcesso;
 	private int tamProcesso;
 	private int chegada;
@@ -20,10 +20,6 @@ public class Processo implements Runnable {
 		return tamProcesso;
 	}
 
-	public void setTamProcesso(int tamProcesso) {
-		this.tamProcesso = tamProcesso;
-	}
-
 	public int getChegada() {
 		return chegada;
 	}
@@ -34,14 +30,10 @@ public class Processo implements Runnable {
 
 	public void setBurst(int burst) {
 		this.burst = burst;
-	}
-
-	public void run() {
 		if (this.burst > 0) {
 			System.out.printf("O processo %d foi executado\n", this.idProcesso);
 		} else {
 			System.out.printf("O processo %d terminou sua execução\n", this.idProcesso);
 		}
 	}
-
 }
