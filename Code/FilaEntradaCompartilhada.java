@@ -1,3 +1,17 @@
+/*Implementado por Ana Gabrielly Mendes Pedroso
+	Estrutura: Todo o trabalho foi desenvoldido em Java. Todos os códigos necessários para a execução
+		 estão na pasta Simulador-SO/Code/. 
+	Para execução: 
+	-entre na pasta Code:
+		cd Simulador-SO/Code
+	-compile os arquivos .java:
+		javac *.java
+	-execute a classe Executor:
+		java Executor
+		
+	(considere executar esse último passo 2 vezes)
+	A saída obtida para a entrada 1000 3 2 1 500 5 15 0 700 1 5 2 600 2 10 está no arquivo saida.txt na pasta Code/
+*/
 import java.util.Vector;
 
 public class FilaEntradaCompartilhada {
@@ -17,25 +31,10 @@ public class FilaEntradaCompartilhada {
 	public synchronized void removeProcessoDaFilaDeEntrada(Processo x) {
 		// System.out.println("Elemento removido PID:"+x.getIdProcesso());
 		filaEntrada.remove(x);
-		ordenaFilaEntrada();
 	}
 
 	public synchronized void colocaNaFilaDeEntrada(Processo p) {
 		filaEntrada.add(p);
-		// printaFilaEntrada();
-	}
-
-	private void ordenaFilaEntrada() {
-		Vector<Processo> aux = new Vector<Processo>();
-		int iterator = filaEntrada.size();
-		int i = 1;
-		while (iterator > 0 && i < filaEntrada.size()) {
-			aux.add(filaEntrada.elementAt(i));
-			i++;
-			iterator--;
-		}
-		filaEntrada.clear();
-		aux.forEach((Processo x) -> filaEntrada.add(x));
 	}
 
 	public synchronized int getTamanho() {
@@ -46,6 +45,6 @@ public class FilaEntradaCompartilhada {
 		System.out.print("\nFILA ENTRADA:");
 		filaEntrada.forEach((Processo pa) -> System.out.printf("\nPID: %d\ntamanho:%d\nquando chegou:%d\nburst:%d\n",
 				pa.getIdProcesso(), pa.getTamProcesso(), pa.getChegada(), pa.getBurst()));
-
+		System.out.println();
 	}
 }

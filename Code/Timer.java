@@ -1,54 +1,68 @@
 public class Timer implements Runnable {
-	private int tempoCpu;
-	private CriadorDeProcessos criador;
 	private Despachante despachante;
-	private boolean terminouProcessamento = false;	
+	private Processo p;
+	private boolean livre = true;
+	private Executor executor;
+	private boolean terminou = false;
 
-	public Timer() {
-		this.tempoCpu = 0;
+	public Timer (Executor e){
+		this.executor = e;
+	}
+	public void setDespachante(Despachante d){
+		this.despachante = d;
+	}
+	public boolean isLivre() {
+		return livre;
 	}
 
-	public synchronized void clock() {
-		tempoCpu++;
-		synchronized (criador) {
-			criador.notify();
-		}
-	}
-
-	public int getTempoCpu() {
-		return this.tempoCpu;
-	}
-
-	public void iniciarTemporizadorAte(int temporizador, int id) {	
-		int ateF = tempoCpu + temporizador;
-		while (tempoCpu < ateF) {
-			//System.out.println("Entrou while tempoCpu: "+ tempoCpu+ "até: "+ateF);
-			clock();
-		}
-		System.out.println("Timer informa ao Despachante que o processo " + id
-		+ " atualmente em execução precisa ser retirado da CPU");
-		terminouProcessamento=true;
-		synchronized (despachante) {
+	public void setLivre(boolean livre) {
+		this.livre = livre;
+		synchronized(despachante){
 			despachante.notify();
 		}
 	}
-
-	public void setDespachante(Despachante d) {
-		this.despachante = d;
+	public boolean terminou() {
+		return terminou;
 	}
 
-	public void setCriador(CriadorDeProcessos c) {
-		this.criador = c;
+	public void setTerminou(boolean terminou) {
+		this.terminou = terminou;
 	}
-	public boolean getTerminouProcessamento() {
-		return terminouProcessamento;
+	public synchronized void setP(Processo p) {
+		this.p = p;
 	}
 
-	public void setTerminouProcessamento(boolean terminouProcessamento) {
-		this.terminouProcessamento = terminouProcessamento;
+	public synchronized void simulaExecucao(int t) {
+		while (livre) {
+			synchronized (this) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		int tempo = t+executor.getTempoAtualTotal();
+		while(executor.getTempoAtualTotal() < tempo){
+			executor.setTempoAtualTotal();
+		}
+		System.out.println("Timer informa ao Despachante que o processo " + p.getIdProcesso()
+				+ " atualmente em execução precisa ser retirado da CPU");
+		terminou=true;
+		synchronized(despachante){
+			despachante.notify();
+		}
 	}
 	@Override
 	public void run() {
-		clock();
+		while(livre){
+			synchronized (this) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
